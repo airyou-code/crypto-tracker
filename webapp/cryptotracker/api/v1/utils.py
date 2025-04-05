@@ -1,12 +1,31 @@
+from rest_framework.exceptions import ValidationError, APIException
+from requests import Response
 
-def fetch_metadata_from_coingecko(symbol):
+
+def handle_bitget_response(response: Response) -> list:
     """
-    This function simulates fetching metadata from the Coingecko API.
-    In a real implementation, you would use an HTTP client to make requests to the Coingecko API.
+    Handle Bitget API response.
+
+    Parameters:
+        response (requests.Response): The response object returned by a Bitget API call.
+
+    Returns:
+        dict: Parsed JSON data if the response is successful and the API code equals "00000".
+
+    Raises:
+        Exception: If the response status is not 200, the JSON is invalid,
+                   or the API returns an error code.
     """
-    # Example of returned data. Implement actual Coingecko API call.
-    return {
-        "name": f"Crypto {symbol.upper()}",
-        "price": 123.45,
-        "market_cap": 67890
-    }
+    try:
+        data = response.json()
+    except ValueError:
+        raise APIException("Invalid JSON response received from Bitget API.")
+
+    # Check HTTP status code and Bitget API specific code
+    if response.status_code not in [200, 201] or data.get("code") != "00000":
+        error_message = data.get("msg", "Unknown error")
+        raise ValidationError(
+            f"Bitget API error: {error_message} (status: {response.status_code})"
+        )
+
+    return data.get("data", [])

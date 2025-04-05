@@ -21,3 +21,4 @@ drf-spectacular==0.26.1
 PyJWT==2.6.0
 # https://whitenoise.readthedocs.io/en/latest/
 whitenoise==6.8.2
+git+https://github.com/airyou-code/bitget-api-python.git

@@ -1,9 +1,17 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from .utils import fetch_metadata_from_coingecko
 from cryptotracker.models import Cryptocurrency
 from .serializers import CryptocurrencySerializer
+from .utils import handle_bitget_response
+from bitget_api_python import Client
+from django.conf import settings
+
+client: Client = Client(
+    api_key=settings.BITGET_API_KEY,
+    api_secret=settings.BITGET_API_SECRET,
+    api_passphrase=settings.BITGET_API_PASSPHRASE,
+)
 
 
 class CryptocurrencyViewSet(viewsets.ModelViewSet):
@@ -15,6 +23,8 @@ class CryptocurrencyViewSet(viewsets.ModelViewSet):
 
     queryset = Cryptocurrency.objects.all()
     serializer_class = CryptocurrencySerializer
+    lookup_field = "symbol"
+    lookup_value_regex = "[a-zA-Z0-9_]+"
 
     def create(self, request, *args, **kwargs):
         symbol = request.data.get("symbol", "").lower()
@@ -23,12 +33,19 @@ class CryptocurrencyViewSet(viewsets.ModelViewSet):
                 {"error": "Field 'symbol' is required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        # Get metadata from Coingecko
-        metadata = fetch_metadata_from_coingecko(symbol)
-        request.data["metadata"] = metadata
+        # Get metadata from Bitget API
+        res = client.get_symbol_info(symbol)
+        data: list = handle_bitget_response(res)
+        if not data:
+            return Response(
+                {"error": f"Data for symbol '{symbol}' not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        request.data["metadata"] = data[0]
         # If name is not provided, fill it from metadata
         if not request.data.get("name"):
-            request.data["name"] = metadata.get("name", "")
+            request.data["name"] = data[0].get("baseCoin", "")
         return super().create(request, *args, **kwargs)
 
     @action(detail=False, methods=["post"], url_path="refresh")
@@ -38,8 +55,14 @@ class CryptocurrencyViewSet(viewsets.ModelViewSet):
         """
         cryptos = Cryptocurrency.objects.all()
         for crypto in cryptos:
-            metadata = fetch_metadata_from_coingecko(crypto.symbol)
-            crypto.metadata = metadata
-            crypto.name = metadata.get("name", crypto.name)
+            res = client.get_symbol_info(crypto.symbol)
+            data: list = handle_bitget_response(res)
+            if not data:
+                return Response(
+                    {"error": f"Data for symbol '{crypto.symbol}' not found."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            crypto.metadata = data[0]
+            crypto.name = data.get("baseCoin", crypto.name)
             crypto.save()
         return Response({"status": "Metadata updated."}, status=status.HTTP_200_OK)
