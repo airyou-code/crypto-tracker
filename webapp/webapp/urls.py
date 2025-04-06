@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 from django.conf import settings
 
 urlpatterns = [
-    path('dashboard/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('api/', include("api.urls")),
     path('robots.txt', TemplateView.as_view(template_name="robots/robots.txt", content_type="text/plain")),
     path('', include("users.urls"))

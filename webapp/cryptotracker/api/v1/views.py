@@ -1,6 +1,11 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.authentication import (
+    SessionAuthentication
+)
+
 from cryptotracker.models import Cryptocurrency
 from .serializers import CryptocurrencySerializer
 from .utils import handle_bitget_response
@@ -23,6 +28,8 @@ class CryptocurrencyViewSet(viewsets.ModelViewSet):
 
     queryset = Cryptocurrency.objects.all()
     serializer_class = CryptocurrencySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication, SessionAuthentication]
     lookup_field = "symbol"
     lookup_value_regex = "[a-zA-Z0-9_]+"
 
@@ -63,6 +70,6 @@ class CryptocurrencyViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_404_NOT_FOUND,
                 )
             crypto.metadata = data[0]
-            crypto.name = data.get("baseCoin", crypto.name)
+            crypto.name = data[0].get("baseCoin", crypto.name)
             crypto.save()
         return Response({"status": "Metadata updated."}, status=status.HTTP_200_OK)

@@ -1,13 +1,57 @@
-version: '3'
+version: '3.8'
+
 services:
   web:
-    image: none
+    image: airyou/prompthub:cryptotracker
+    command: /start
+    ports:
+      - '8200:8200'
     env_file:
-      - .env
+      - webapp/.env
+    # volumes:
+    #   - static-files:/app/static
     depends_on:
       - db
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 3
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    networks:
+      - cryptotracker-network
 
   db:
-    image: postgres:15
+    image: postgres:16
+    ports:
+      - '5433:5432'
     env_file:
-      - .env
+      - webapp/.env
+    volumes:
+      - ./data/postgres16/cryptotracker:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cryptotracker-network
+
+  nginx:
+    image: airyou/prompthub:cryptotracker-nginx
+    ports:
+      - "82:82"
+    depends_on:
+      - web
+    networks:
+      - cryptotracker-network
+
+volumes:
+  static-files:
+
+networks:
+  cryptotracker-network:

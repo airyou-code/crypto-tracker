@@ -83,8 +83,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
 
-    # https://whitenoise.readthedocs.io/en/latest/
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    # # https://whitenoise.readthedocs.io/en/latest/
+    # "whitenoise.middleware.WhiteNoiseMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -115,12 +115,12 @@ TEMPLATES = [
     },
 ]
 # https://whitenoise.readthedocs.io/en/latest/
-STORAGES = {
-    # ...
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+# STORAGES = {
+#     # ...
+#     "staticfiles": {
+#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+#     },
+# }
 
 WSGI_APPLICATION = "webapp.wsgi.application"
 
@@ -149,19 +149,19 @@ SPECTACULAR_SETTINGS = {
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
 # DATABASES = {
-#     'default': config(
-#         'DATABASE_URL',
-#         default='postgres://user:password@127.0.0.1:5432/db_name',
-#         cast=db_url
-#     )
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
 # }
+DATABASES = {
+    'default': config(
+        'DATABASE_URL',
+        default='postgres://user:password@127.0.0.1:5432/db_name',
+        cast=db_url
+    )
+}
 
 
 # Password validation
@@ -199,13 +199,13 @@ USE_TZ = config("USE_TZ", default=True, cast=bool)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATIC_URL = "/static/"
+STATIC_URL = '/admin/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/admin/media/'
 
-DOCS_ROOT = os.path.join(BASE_DIR, "docs", "_build", "html")
-DOCS_URL = "/docs/"
+DOCS_ROOT = os.path.join(BASE_DIR, 'docs', '_build', 'html')
+DOCS_URL = '/admin/docs/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -214,7 +214,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.AppUser"
 
-LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_REDIRECT_URL = '/admin/'
 LOGOUT_REDIRECT_URL = '/'
 
 # JAZZMIN SETTINGS

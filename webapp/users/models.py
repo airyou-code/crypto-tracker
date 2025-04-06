@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from cryptotracker.models import Cryptocurrency
 # Create your models here.
 
 
@@ -15,19 +16,19 @@ class AppUser(AbstractUser):
         verbose_name_plural = _("Users")
 
 
-def set_library_uesr_permission(user):
+def set_uesr_permission(user):
     user_permissions: list = [
+        Permission.objects.get(
+            codename='view_cryptocurrency',
+            content_type=ContentType.objects.get_for_model(Cryptocurrency)
+        ),
         # Permission.objects.get(
-        #     codename='view_book',
-        #     content_type=ContentType.objects.get_for_model(Book)
+        #     codename='view_cryptocurrency',
+        #     content_type=ContentType.objects.get_for_model(Cryptocurrency)
         # ),
         # Permission.objects.get(
-        #     codename='add_loan',
-        #     content_type=ContentType.objects.get_for_model(Loan)
-        # ),
-        # Permission.objects.get(
-        #     codename='change_loan',
-        #     content_type=ContentType.objects.get_for_model(Loan)
+        #     codename='view_cryptocurrency',
+        #     content_type=ContentType.objects.get_for_model(Cryptocurrency)
         # ),
     ]
 
