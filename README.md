@@ -10,11 +10,23 @@ Crypto Tracker API provides a set of endpoints for creating, retrieving, updatin
 ## Technologies Used
 
 - **Django** – The web framework used to build the API.
-- **PostgreSQL** – Database for persistent data storage.
+- **PostgreSQL** – Database.
 - ~~**Celery** – Asynchronous task queue used for background processes.~~
 - ~~**Redis** – Message broker for Celery.~~
 - ~~**RabbitMQ** – Alternative message broker used in some configurations.~~
-- **bitget-api-python** – Custom Bitget API Python library, available at [https://github.com/airyou-code/bitget-api-python](https://github.com/airyou-code/bitget-api-python).
+- **bitget-api-python** – My Custom Bitget API Python library, available at [https://github.com/airyou-code/bitget-api-python](https://github.com/airyou-code/bitget-api-python).
+
+## Try the Application
+
+1. **Registration & Login:**  
+   Visit [https://cryptotracker.prompthub.study/](https://cryptotracker.prompthub.study/) to register a new account and log in.
+
+2. **Test the API via Swagger:**  
+   After logging in, you can try the API using Swagger at [https://cryptotracker.prompthub.study/api/v1/](https://cryptotracker.prompthub.study/api/v1/).
+
+3. **Admin Interface:**  
+   To view and manage cryptocurrency data, access the admin interface at [https://cryptotracker.prompthub.study/admin/cryptotracker/cryptocurrency/](https://cryptotracker.prompthub.study/admin/cryptotracker/cryptocurrency/).
+
 
 ## Endpoints Overview
 
@@ -57,7 +69,7 @@ The API conforms to the OpenAPI 3.0.3 specification. Below is a brief descriptio
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
+   git clone https://github.com/airyou-code/crypto-tracker.git
    cd your-repo-name
    ```
 
@@ -67,7 +79,24 @@ The API conforms to the OpenAPI 3.0.3 specification. Below is a brief descriptio
    ```
 
 3. **Configure Environment Variables:**
-   Create a `.env` file with the necessary settings for Django, PostgreSQL, Redis, and RabbitMQ.
+   Create a `.env` file with the necessary settings for Django, PostgreSQL
+   ```bash
+   # .env.example
+   ALLOWED_HOSTS="*"
+   CSRF_TRUSTED_ORIGINS="https://cryptotracker.prompthub.study"
+   CORS_ORIGIN_WHITELIST="https://cryptotracker.prompthub.study"
+   CORS_ALLOWED_ORIGINS="https://cryptotracker.prompthub.study"
+   BITGET_API_KEY=
+   BITGET_API_SECRET=
+   BITGET_API_PASSPHRASE=
+
+   POSTGRES_USER=
+   POSTGRES_PASSWORD=
+   POSTGRES_DB=
+   POSTGRES_HOST=db
+   POSTGRES_PORT=5432
+   DATABASE_URL=postgresql://user:pass@db:5432/db_name
+   ```
 
 4. **Run Migrations:**
    ```bash
